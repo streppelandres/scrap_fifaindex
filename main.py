@@ -1,7 +1,9 @@
 from selenium import webdriver
 from string import digits
+import re
+from player import *
 
-driver = webdriver.Chrome(executable_path=r"C:\Users\Julian\Downloads\scrap_fifaindex-main\chromedriver.exe")
+driver = webdriver.Chrome(executable_path=r"C:\Users\itali\Desktop\scrap_fifaindex\chromedriver_win32\chromedriver.exe")
 
 driver.get("https://www.fifaindex.com/es/teams/fifa17_123")
 
@@ -13,118 +15,101 @@ equipo = driver.find_elements_by_css_selector("td[data-title='Nombre']")[0]
 print("Entro a revisar el equipo [" + str(0) + "]" + equipo.text + "]")
 equipo.click()
 
-cant = len(driver.find_elements_by_css_selector("td[data-title='Nombre']"))
+cant = len(driver.find_elements_by_css_selector("td[data-title='Nombre']"))-1
+print("Cantidad de jugadores [" + str(cant) + "]")
 
 i = 0
 while i < cant:
+    print("Valor de i al principio [" + str(i) + "]")
     jugador = driver.find_elements_by_css_selector("td[data-title='Nombre']")[i]
-    jugador.click()
+    print("Jugador que voy hacer click [" + jugador.text + "]")
+    
 
-    #Containers
-    header = driver.find_elements_by_css_selector("h5.card-header")[0]
-    box1 = driver.find_elements_by_css_selector(".card-body")[0]
-    header2 = driver.find_elements_by_css_selector("h5.card-header")[1]
-    stats_box1 = driver.find_elements_by_css_selector(".row.grid .item")[0]
-    stats_box2 = driver.find_elements_by_css_selector(".row.grid .item")[1]
-    stats_box3 = driver.find_elements_by_css_selector(".row.grid .item")[2]
-    stats_box4 = driver.find_elements_by_css_selector(".row.grid .item")[3]
-    stats_box5 = driver.find_elements_by_css_selector(".row.grid .item")[4]
-    stats_box6 = driver.find_elements_by_css_selector(".row.grid .item")[5]
-    stats_box7 = driver.find_elements_by_css_selector(".row.grid .item")[6]
-    #stats_box8 = driver.find_elements_by_css_selector(".row.grid .item")[7]
-    #stats_box9 = driver.find_elements_by_css_selector(".row.grid .item")[8]
+    state = driver.execute_script('return document.readyState')
+    if state == 'complete':
+        jugador.click()
+        # Aca deberia ir un wait
 
-    #Elements
-    # TODO: Mejorar estos metodos, hacerlo mas comprensivo
-    #*BOX 1*
-    nombre = header.text.translate(str.maketrans('', '', digits)).replace('\n', ' ').replace('\r', '').strip()
-    valoracionA = header.text.split()[len(header.text.split(" "))-1]
-    valoracionB = header.text.split()[len(header.text.split(" "))]
+        # Containers
+        elementHeader = driver.find_elements_by_css_selector("h5.card-header")[0]
+        elementCardBodyFloatRight = driver.find_elements_by_css_selector(".card-body .float-right")
 
-    weight = driver.find_elements_by_css_selector(".card-body .float-right .data-units-metric")[0]
-    height = driver.find_elements_by_css_selector(".card-body .float-right .data-units-metric")[1]
-    foot = driver.find_elements_by_css_selector(".card-body .float-right")[2]
-    birth = driver.find_elements_by_css_selector(".card-body .float-right")[3]
-    age = driver.find_elements_by_css_selector(".card-body .float-right")[4]
-    position = driver.find_elements_by_css_selector(".card-body .float-right")[5]
-    rendimiento = driver.find_elements_by_css_selector(".card-body .float-right")[6]
-    #stars
-        #badfoot = driver.find_elements_by_css_selector(".card-body .float-right")[7]
-        #skills = driver.find_elements_by_css_selector(".card-body .float-right")[8]
-    value = driver.find_elements_by_css_selector(".card-body .float-right")[9]
-    wage = driver.find_elements_by_css_selector(".card-body .float-right")[10]
-
-    #*BOX 2*
-    club = driver.find_elements_by_css_selector("h5.card-header .link-team")[1]
-
-    #*STATS*
-    control = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(1) p:nth-of-type(1) .badge-dark")[0]
-    regates = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(1) p:nth-of-type(2) .badge-dark")[0]
-
-    marcaje = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(2) p:nth-of-type(1) .badge-dark")[0]
-    entradas = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(2) p:nth-of-type(2) .badge-dark")[0]
-    robos = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(2) p:nth-of-type(3) .badge-dark")[0]
-
-    agresividad = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(1) .badge-dark")[0]
-    anticipacion = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(2) .badge-dark")[0]
-    pos_ataque = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(3) .badge-dark")[0]
-    intercep = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(4) .badge-dark")[0]
-    vision = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(5) .badge-dark")[0]
-    compostura = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(6) .badge-dark")[0]
-
-    centros = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(4) p:nth-of-type(1) .badge-dark")[0]
-    pase_corto = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(4) p:nth-of-type(2) .badge-dark")[0]
-    pase_largo = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(4) p:nth-of-type(3) .badge-dark")[0]
-
-    aceleracion = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(1) .badge-dark")[0]
-    resistencia = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(2) .badge-dark")[0]
-    fuerza = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(3) .badge-dark")[0]
-    equilibrio = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(4) .badge-dark")[0]
-    velocidad = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(5) .badge-dark")[0]
-    agilidad = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(6) .badge-dark")[0]
-    salto = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(7) .badge-dark")[0]
-
-    cabezazos = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(1) .badge-dark")[0]
-    pot_de_tiro = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(2) .badge-dark")[0]
-    definicion = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(3) .badge-dark")[0]
-    tiros_lejanos = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(4) .badge-dark")[0]
-    efecto = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(5) .badge-dark")[0]
-    prec_falta = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(6) .badge-dark")[0]
-    penaltis = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(7) .badge-dark")[0]
-    voleas = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(8) .badge-dark")[0]
-
-    colocacion = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(1) .badge-dark")[0]
-    estirada = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(2) .badge-dark")[0]
-    paradas = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(3) .badge-dark")[0]
-    saques = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(4) .badge-dark")[0]
-    reflejos = driver.find_elements_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(5) .badge-dark")[0]
+        # Elements
+        # TODO: Mejorar estos metodos, hacerlo mas comprensivo
+        # *BOX 1 *
+        nombre = elementHeader.text.translate(str.maketrans('', '', digits)).replace('\n', ' ').replace('\r', '').strip()
+        print("Nombre encontrado [" + nombre + "]")
 
 
-    weight = weight.text
-    height = height.text
-    foot = foot.text
-    birth = birth.text
-    age = age.text
-        #position = position.text
-    rendimiento = rendimiento.text
-        #badfoot = badfoot.text
-        #skills = skills.text
-    value = value.text
-    wage = wage.text
+        valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)]
+        print("Valoraciones encontradas [" + ' '.join([str(elem) for elem in valoraciones])  + "]")
 
-    club = club.text
+        valoracionA = str(valoraciones[0])
+        valoracionB = str(valoraciones[1])
 
-    control = control.text
-    regates = regates.text
+        player = Player(nombre, valoracionA, valoracionB)
+        player.altura = driver.find_elements_by_css_selector(".card-body .float-right .data-units-metric")[0].text
+        player.peso = driver.find_elements_by_css_selector(".card-body .float-right .data-units-metric")[1].text
+        player.pie = elementCardBodyFloatRight[2].text
+        player.nacimiento = elementCardBodyFloatRight[3].text
+        player.edad = elementCardBodyFloatRight[4].text
+        player.posicion = elementCardBodyFloatRight[5].text # TODO: Aca pueden haber varias posiciones preferidas
+        player.rendimiento = elementCardBodyFloatRight[6].text
 
-    marcaje = marcaje.text
-    entradas = entradas.text
-    robos = robos.text
+        #stars
+            #badfoot = driver.find_elements_by_css_selector(".card-body .float-right")[7]
+            #skills = driver.find_elements_by_css_selector(".card-body .float-right")[8]
+        
+        player.valor = elementCardBodyFloatRight[9].text
+        player.sueldo = elementCardBodyFloatRight[10].text
 
-    print("Nombre [" + nombre + "] [" + valoracionA + "] [" + valoracionB + "] [" + control + "] [" + regates + "]")
+        #*BOX 2*
+        player.club = driver.find_elements_by_css_selector("h5.card-header .link-team")[1]
 
-    driver.back() # Vuelvo atras en el navegador
+        #*STATS*
+        player.control = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(1) p:nth-of-type(1) .badge-dark").text
+        player.regates = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(1) p:nth-of-type(2) .badge-dark").text
 
-    i+=1
+        player.marcaje = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(2) p:nth-of-type(1) .badge-dark").text
+        player.entradas = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(2) p:nth-of-type(2) .badge-dark").text
+        player.robos = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(2) p:nth-of-type(3) .badge-dark").text
+
+        player.agresividad = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(1) .badge-dark").text
+        player.anticipacion = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(2) .badge-dark").text
+        player.pos_ataque = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(3) .badge-dark").text
+        player.intercep = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(4) .badge-dark").text
+        player.vision = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(5) .badge-dark").text
+        player.compostura = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(3) p:nth-of-type(6) .badge-dark").text
+
+        player.centros = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(4) p:nth-of-type(1) .badge-dark").text
+        player.pase_corto = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(4) p:nth-of-type(2) .badge-dark").text
+        player.pase_largo = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(4) p:nth-of-type(3) .badge-dark").text
+
+        player.aceleracion = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(1) .badge-dark").text
+        player.resistencia = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(2) .badge-dark").text
+        player.fuerza = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(3) .badge-dark").text
+        player.equilibrio = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(4) .badge-dark").text
+        player.velocidad = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(5) .badge-dark").text
+        player.agilidad = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(6) .badge-dark").text
+        player.salto = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(5) p:nth-of-type(7) .badge-dark").text
+
+        player.cabezazos = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(1) .badge-dark").text
+        player.pot_de_tiro = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(2) .badge-dark").text
+        player.definicion = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(3) .badge-dark").text
+        player.tiros_lejanos = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(4) .badge-dark").text
+        player.efecto = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(5) .badge-dark").text
+        player.prec_falta = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(6) .badge-dark").text
+        player.penaltis = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(7) .badge-dark").text
+        player.voleas = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(6) p:nth-of-type(8) .badge-dark").text
+
+        player.colocacion = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(1) .badge-dark").text
+        player.estirada = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(2) .badge-dark").text
+        player.paradas = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(3) .badge-dark").text
+        player.saques = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(4) .badge-dark").text
+        player.reflejos = driver.find_element_by_css_selector(".row.grid .item:nth-of-type(7) p:nth-of-type(5) .badge-dark").text
+
+        print("i [" + str(i) + "] Nombre [" + player.nombre + "] [" + player.valoracionA + "] [" + player.valoracionB + "] [" + player.control + "] [" + player.regates + "]")
+        i+=1
+        driver.back() # Vuelvo atras en el navegador
 
 driver.close()
