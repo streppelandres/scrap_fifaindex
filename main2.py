@@ -22,20 +22,22 @@ while True:
 
     for team_url in get_all_url_teams_from_page():
         # Navigate to team page
-        print("Redirect to team [" + team_url + "]")
+        # print("Redirect to team [" + team_url + "]")
         DRIVER.get(team_url)
-
+        team_name = DRIVER.find_element_by_css_selector('div.col-lg-8 nav ol.breadcrumb.bg-primary li.breadcrumb-item.active').text
+        print("-------------------------------------------------------------------")
         for player_url in get_all_url_players_from_page():
-            print("Redirect to player [" + player_url + "]")
+            # print("Redirect to player [" + player_url + "]")
             DRIVER.get(player_url)
 
             elementHeader = DRIVER.find_elements_by_css_selector("h5.card-header")[0]
             nombre = elementHeader.text.translate(str.maketrans('', '', digits)).replace('\n', ' ').replace('\r', '').strip()
-            print("Player name [" + nombre + "]")
+            # print("Player name [" + nombre + "]")
 
             valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)]
-            print("Player rate [" + ' '.join([str(elem) for elem in valoraciones])  + "]")
+            # print("Player rate [" + ' '.join([str(elem) for elem in valoraciones])  + "]")
 
+            print("| " + ' '.join([str(elem) for elem in valoraciones]) + "\t| " + team_name + "\t| " + nombre)
             print("-------------------------------------------------------------------")
 
     DRIVER.get(next_page_url)
