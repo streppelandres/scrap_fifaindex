@@ -2,6 +2,7 @@ from selenium import webdriver
 from string import digits
 import re
 from player import *
+import time
 
 driver = webdriver.Chrome(executable_path=r"C:\Users\itali\Desktop\scrap_fifaindex\chromedriver_win32\chromedriver.exe")
 
@@ -28,6 +29,7 @@ while i < cant:
     state = driver.execute_script('return document.readyState')
     if state == 'complete':
         jugador.click()
+        #time.sleep(3)
         # Aca deberia ir un wait
 
         # Containers
