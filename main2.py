@@ -1,47 +1,49 @@
 from selenium import webdriver
 from string import digits
 import re
+import logging
+from datetime import datetime
 
 def get_all_url_teams_from_page():
-    teams = DRIVER.find_elements_by_css_selector("table.table-teams tbody tr td[data-title='Nombre'] a.link-team")
+    teams = driver.find_elements_by_css_selector("table.table-teams tbody tr td[data-title='Nombre'] a.link-team")
     return [one_team.get_attribute('href') for one_team in teams]
 
 def get_next_button_url():
-    return DRIVER.find_element_by_css_selector("nav ul.pagination li.ml-auto a.btn.btn-light").get_attribute('href')
+    return driver.find_element_by_css_selector("nav ul.pagination li.ml-auto a.btn.btn-light").get_attribute('href')
 
 def get_all_url_players_from_page():
-    players = DRIVER.find_elements_by_css_selector("table.table-players tbody td[data-title='Nombre'] a.link-player")
+    players = driver.find_elements_by_css_selector("table.table-players tbody td[data-title='Nombre'] a.link-player")
     return [one_player.get_attribute('href') for one_player in players]
 
-DRIVER = webdriver.Chrome(executable_path=r"C:\Users\itali\Desktop\scrap_fifaindex\chromedriver_win32\chromedriver.exe")
-DRIVER.get("https://www.fifaindex.com/es/teams/fifa17_123/")
+def get_team_name_from_team_page():
+    return driver.find_element_by_css_selector('div.col-lg-8 nav ol.breadcrumb.bg-primary li.breadcrumb-item.active').text
 
+# log config TODO: Meterlos en una carpeta
+logging.basicConfig(filename=datetime.today().strftime('%Y%m%d') + '_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
+
+# driver config TODO: Hacer el path relativo
+driver = webdriver.Chrome(executable_path=r"C:\chromedriver_win32\chromedriver.exe")
+driver.get("https://www.fifaindex.com/es/teams/fifa17_123/") # Navigate to the frist team's page
+
+# TODO: cambiar el while-true por el max numero de paginas, lo tenias anotado por ahi
 while True:
     next_page_url = get_next_button_url()
-    print("Next page URL [" + next_page_url + "]")
 
+    # por cada equipo de esa pagina
     for team_url in get_all_url_teams_from_page():
-        # Navigate to team page
-        # print("Redirect to team [" + team_url + "]")
-        DRIVER.get(team_url)
-        team_name = DRIVER.find_element_by_css_selector('div.col-lg-8 nav ol.breadcrumb.bg-primary li.breadcrumb-item.active').text
-        print("-------------------------------------------------------------------")
+        logging.info("Redireccionando al equipo [" + team_url + "]")
+        driver.get(team_url) # Navigate to team page
+        team_name = get_team_name_from_team_page()
+
+        # por cada jugador de ese equipo
         for player_url in get_all_url_players_from_page():
-            # print("Redirect to player [" + player_url + "]")
-            DRIVER.get(player_url)
+            driver.get(player_url) # Navigate to player page
+            logging.info("Redireccionando al jugador [" + player_url + "]")
 
-            elementHeader = DRIVER.find_elements_by_css_selector("h5.card-header")[0]
+            elementHeader = driver.find_elements_by_css_selector("h5.card-header")[0]
             nombre = elementHeader.text.translate(str.maketrans('', '', digits)).replace('\n', ' ').replace('\r', '').strip()
-            # print("Player name [" + nombre + "]")
-
             valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)]
-            # print("Player rate [" + ' '.join([str(elem) for elem in valoraciones])  + "]")
 
             print("| " + ' '.join([str(elem) for elem in valoraciones]) + "\t| " + team_name + "\t| " + nombre)
-            print("-------------------------------------------------------------------")
 
-    DRIVER.get(next_page_url)
-
-# TODO: cuando termina el for de los teams, tiene que redireccionar a donde se haya guardado el ultimo boton
-# y repetir recursivamente todo de nuevo
-# fijate de hacer algun metodo recursivo
+    driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
