@@ -41,7 +41,7 @@ while True:
                 driver.get(player_url) # navigate to player page
 
                 # scrapeo el player y lo guardo en el csv
-                writer.writerow(functions.do_scrap_player(driver, team_name, team_id))
+                writer.writerow(functions.do_scrap_player(driver, team_name, team_id, functions.get_player_id_from_url(player_url)))
 
     if((LIMITE_CANTIDAD_PAGINAS-1) == i):
         logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")

@@ -1,4 +1,5 @@
 from string import digits
+import urllib.request
 import re
 
 # algunos metodos
@@ -16,14 +17,19 @@ def get_all_url_players_from_page(driver):
 def get_team_name_from_team_page(driver):
     return driver.find_element_by_css_selector('div.col-lg-8 nav ol.breadcrumb.bg-primary li.breadcrumb-item.active').text
 
+# TODO: Estos dos metodos hacen lo mismo, fijate capaz de hacer uno solo
 def get_team_id_from_url(team_url):
     url_split = team_url.split('/')
     return url_split[len(url_split)-4]
 
-def get_csv_header():
-    return ["Equipo", "Equipo id", "Nombre", "V1", "V2"]
+def get_player_id_from_url(player_url):
+    url_split = player_url.split('/')
+    return url_split[len(url_split)-4]
 
-def do_scrap_player(driver, team_name, team_id):
+def get_csv_header():
+    return ["equipo", "equipo id", "jugador nombre", "jugador id", "val_1", "val_2"]
+
+def do_scrap_player(driver, team_name, team_id, player_id):
     player_data_array = []
 
     # equipo
@@ -32,15 +38,25 @@ def do_scrap_player(driver, team_name, team_id):
     # equipo id
     player_data_array.append(team_id)
 
-    # nombre
+    # jugador nombre
     elementHeader = driver.find_elements_by_css_selector("h5.card-header")[0]
     player_data_array.append(
         elementHeader.text.translate(str.maketrans('', '', digits)).replace('\n', ' ').replace('\r', '').strip()
     )
+
+    # jugador id
+    player_data_array.append(player_id)
+
     # valoraciones
     valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)]
     player_data_array.append(str(valoraciones[0]))
     player_data_array.append(str(valoraciones[1]))
 
+    # descargo la img
+    img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6 div.d-flex.mb-3.align-items-center div.align-self-center img.player").get_attribute("src")
+    print("Img src = [" + img_src + "]")
+    img_src = img_src[0:len(img_src)-4] + "png"
+    print("Img src = [" + img_src + "]")
+    urllib.request.urlretrieve(img_src, "aaaa.png")
 
     return player_data_array
