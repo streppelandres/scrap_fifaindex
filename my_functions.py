@@ -16,14 +16,21 @@ def get_all_url_players_from_page(driver):
 def get_team_name_from_team_page(driver):
     return driver.find_element_by_css_selector('div.col-lg-8 nav ol.breadcrumb.bg-primary li.breadcrumb-item.active').text
 
-def get_csv_header():
-    return ["Equipo", "Nombre", "V1", "V2"]
+def get_team_id_from_url(team_url):
+    url_split = team_url.split('/')
+    return url_split[len(url_split)-4]
 
-def do_scrap_player(driver, team_name):
+def get_csv_header():
+    return ["Equipo", "Equipo id", "Nombre", "V1", "V2"]
+
+def do_scrap_player(driver, team_name, team_id):
     player_data_array = []
 
     # equipo
     player_data_array.append(team_name)
+
+    # equipo id
+    player_data_array.append(team_id)
 
     # nombre
     elementHeader = driver.find_elements_by_css_selector("h5.card-header")[0]

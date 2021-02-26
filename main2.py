@@ -25,8 +25,9 @@ while True:
         driver.get(team_url) # Navigate to team page
 
         team_name = functions.get_team_name_from_team_page(driver)
+        team_id = functions.get_team_id_from_url(team_url)
 
-        # abro el csv
+        # abro el csv TODO: Meterlo en una carpeta
         with open('player_list.csv', 'a', newline='', encoding="utf-8") as file:
             writer = csv.writer(file)
 
@@ -40,11 +41,13 @@ while True:
                 driver.get(player_url) # navigate to player page
 
                 # scrapeo el player y lo guardo en el csv
-                writer.writerow(functions.do_scrap_player(driver, team_name)) 
+                writer.writerow(functions.do_scrap_player(driver, team_name, team_id))
 
     if((LIMITE_CANTIDAD_PAGINAS-1) == i):
+        logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")
         break
     
+    logging.info("Redireccionando a la pagina [" + next_page_url + "]")
     driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
 
     i+=1
