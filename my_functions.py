@@ -12,7 +12,7 @@ def get_next_button_url(driver):
     return driver.find_element_by_css_selector("nav ul.pagination li.ml-auto a.btn.btn-light").get_attribute('href')
 
 def get_all_url_players_from_page(driver):
-    players = driver.find_elements_by_css_selector("table.table-players tbody td[data-title='Nombre'] a.link-player")
+    players = driver.find_elements_by_css_selector("table.table-players")[0].find_elements_by_css_selector("tbody td[data-title='Nombre'] a.link-player")
     return [one_player.get_attribute('href') for one_player in players]
 
 def get_team_name_from_team_page(driver):
