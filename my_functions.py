@@ -1,7 +1,7 @@
 from string import digits
 import urllib.request
 import re
-from main2 import DATA_VERSION_DATE
+# from main2 import DATA_VERSION_DATE
 
 # algunos metodos
 def get_all_url_teams_from_page(driver):
@@ -35,29 +35,29 @@ def get_and_download_player_img(driver):
 def get_csv_header():
     return ["date_version", "equipo", "equipo_id", "jugador_nombre", "jugador_id", "val_1", "val_2"]
 
-def do_scrap_player(driver, team_name, team_id, player_id):
+def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
     player_data_array = []
 
     # agrego la fecha de la version de los datos
-    player_data_array.append(DATA_VERSION_DATE)
+    player_data_array.append(fecha_de_la_data)
 
     # equipo
     player_data_array.append(team_name)
 
     # equipo id
-    player_data_array.append(team_id)
+    player_data_array.append(FAKE_ID_PLUS + team_id)
 
     # jugador nombre
     elementHeader = driver.find_elements_by_css_selector("h5.card-header")[0]
     player_data_array.append(
-        elementHeader.text.translate(str.maketrans('', '', digits)).replace('\n', ' ').replace('\r', '').strip()
+        elementHeader.text.translate(str.maketrans('', '', digits)).replace('\n', ' ').replace('\r', '').strip() # agarro nada mas las letras del string
     )
 
     # jugador id
     player_data_array.append(player_id)
 
     # valoraciones
-    valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)]
+    valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)] # agarro nada mas los enteros del string
     player_data_array.append(str(valoraciones[0])) # val_1
     player_data_array.append(str(valoraciones[1])) # val_2
 
@@ -65,3 +65,5 @@ def do_scrap_player(driver, team_name, team_id, player_id):
     get_and_download_player_img(driver)
 
     return player_data_array
+
+FAKE_ID_PLUS = "1000" # id que se le agrega adelante para adaptarlo al wordpress deficiente de J

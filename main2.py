@@ -6,13 +6,13 @@ import my_functions as functions
 import csv
 
 DATA_VERSION_URL = "fifa17_123" # url version de la data
-DATA_VERSION_DATE = "27-03-2017" # fecha de la data (hardcodeado a pedido de j)
+DATA_VERSION_DATE = "27-03-2017" # fecha de la data (hardcodeado a pedido de J)
 LIMITE_CANTIDAD_PAGINAS = 0 # indicar la cantidad de paginas a scrapear, si es [0] va ser "infinito"
 
 flagFirstTime = True # flag para saber si es la primer iteraccion
 
 # log config TODO: Meterlos en una carpeta
-logging.basicConfig(filename=datetime.today().strftime('%Y%m%d') + '_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
+logging.basicConfig(filename= "logs/" + datetime.today().strftime('%Y%m%d') + '_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
 
 # driver config TODO: Hacer el path relativo
 driver = webdriver.Chrome(executable_path=r"C:\chromedriver_win32\chromedriver.exe")
@@ -36,7 +36,7 @@ while True:
         team_id = functions.get_team_id_from_url(team_url)
 
         # abro el csv TODO: Meterlo en una carpeta
-        with open('player_list.csv', 'a', newline='', encoding="utf-8") as file:
+        with open('data/player_list.csv', 'a', newline='', encoding="utf-8") as file:
             writer = csv.writer(file)
 
             if(flagFirstTime):
@@ -49,7 +49,11 @@ while True:
                 driver.get(player_url) # navigate to player page
 
                 # scrapeo el player y lo guardo en el csv
-                writer.writerow(functions.do_scrap_player(driver, team_name, team_id, functions.get_player_id_from_url(player_url)))
+                writer.writerow(
+                    functions.do_scrap_player(
+                            driver, team_name, team_id, functions.get_player_id_from_url(player_url), DATA_VERSION_DATE
+                        )
+                    )
 
     if((LIMITE_CANTIDAD_PAGINAS-1) == i):
         logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")
