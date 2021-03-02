@@ -5,16 +5,18 @@ import urllib.request
 import my_functions as functions
 import csv
 
-# flag para saber si es la primer iteraccion
-flagFirstTime = True
+DATA_VERSION_URL = "fifa17_123" # url version de la data
+DATA_VERSION_DATE = "27-03-2017" # fecha de la data (hardcodeado a pedido de j)
 LIMITE_CANTIDAD_PAGINAS = 0 # indicar la cantidad de paginas a scrapear, si es [0] va ser "infinito"
+
+flagFirstTime = True # flag para saber si es la primer iteraccion
 
 # log config TODO: Meterlos en una carpeta
 logging.basicConfig(filename=datetime.today().strftime('%Y%m%d') + '_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
 
 # driver config TODO: Hacer el path relativo
 driver = webdriver.Chrome(executable_path=r"C:\chromedriver_win32\chromedriver.exe")
-driver.get("https://www.fifaindex.com/es/teams/fifa17_123/") # Navigate to the frist team's page
+driver.get("https://www.fifaindex.com/es/teams/" + DATA_VERSION_URL) # Navigate to the frist team's page
 
 # config de urlib
 opener=urllib.request.build_opener()

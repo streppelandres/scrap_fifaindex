@@ -1,6 +1,7 @@
 from string import digits
 import urllib.request
 import re
+from main2 import DATA_VERSION_DATE
 
 # algunos metodos
 def get_all_url_teams_from_page(driver):
@@ -26,16 +27,19 @@ def get_player_id_from_url(player_url):
     url_split = player_url.split('/')
     return url_split[len(url_split)-4]
 
-def download_player_img(driver):
+def get_and_download_player_img(driver):
     img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6 div.d-flex.mb-3.align-items-center div.align-self-center img.player").get_attribute("src")
     img_src = img_src[0:len(img_src)-4] + "png" # Cambio el formato a png
     urllib.request.urlretrieve(img_src, "img/" + img_src.split("/")[8])
 
 def get_csv_header():
-    return ["equipo", "equipo id", "jugador nombre", "jugador id", "val_1", "val_2"]
+    return ["date_version", "equipo", "equipo_id", "jugador_nombre", "jugador_id", "val_1", "val_2"]
 
 def do_scrap_player(driver, team_name, team_id, player_id):
     player_data_array = []
+
+    # agrego la fecha de la version de los datos
+    player_data_array.append(DATA_VERSION_DATE)
 
     # equipo
     player_data_array.append(team_name)
@@ -54,10 +58,10 @@ def do_scrap_player(driver, team_name, team_id, player_id):
 
     # valoraciones
     valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)]
-    player_data_array.append(str(valoraciones[0]))
-    player_data_array.append(str(valoraciones[1]))
+    player_data_array.append(str(valoraciones[0])) # val_1
+    player_data_array.append(str(valoraciones[1])) # val_2
 
     # descargo la img
-    download_player_img(driver)
+    get_and_download_player_img(driver)
 
     return player_data_array
