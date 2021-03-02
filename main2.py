@@ -1,6 +1,7 @@
 from selenium import webdriver
 import logging
 from datetime import datetime
+import urllib.request
 import my_functions as functions
 import csv
 
@@ -14,6 +15,11 @@ logging.basicConfig(filename=datetime.today().strftime('%Y%m%d') + '_logging.log
 # driver config TODO: Hacer el path relativo
 driver = webdriver.Chrome(executable_path=r"C:\chromedriver_win32\chromedriver.exe")
 driver.get("https://www.fifaindex.com/es/teams/fifa17_123/") # Navigate to the frist team's page
+
+# config de urlib
+opener=urllib.request.build_opener()
+opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
+urllib.request.install_opener(opener)
 
 i = 0
 while True:
