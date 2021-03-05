@@ -77,9 +77,9 @@ def adapter_posiciones_db_deficiente_j(webelement_posiciones):
     # formateo los elementos acorde a la bd de j
     posiciones = []
     i = 0
-    celda = "a:" + str(len(pList)) + ": {"
+    celda = "a:" + str(len(pList)) + ":{"
     for p in pList:
-        celda += "i:" + str(i) + ";s:" + str(len(p)) + "\"" + p + "\";"
+        celda += "i:" + str(i) + ";s:" + str(len(p)) + ":\"" + p.lower() + "\";"
         i+=1
     celda += "}"
 
