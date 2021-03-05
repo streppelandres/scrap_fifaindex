@@ -37,7 +37,7 @@ while True:
 
         # abro el csv TODO: Meterlo en una carpeta
         with open('data/player_list.csv', 'a', newline='', encoding="utf-8") as file:
-            writer = csv.writer(file)
+            writer = csv.writer(file, quotechar='&') # , delimiter=',', escapechar='\0', quoting=csv.QUOTE_NONE, skipinitialspace=True
 
             if(flagFirstTime):
                 writer.writerow(functions.get_csv_header())

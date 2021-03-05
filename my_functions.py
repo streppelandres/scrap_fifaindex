@@ -51,10 +51,7 @@ def scrap_player_first_card(driver, player_data_array):
     player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(5) span.float-right").text)
 
     # posiciones preferidas
-    pList = []
-    for p in driver.find_elements_by_css_selector(first_card_selector + "p:nth-of-type(6) span.float-right a"):
-        pList.append(p.text) # capaz le faltaria un + " "
-    player_data_array.append(" ".join(pList))
+    player_data_array.append(adapter_posiciones_db_deficiente_j(driver.find_elements_by_css_selector(first_card_selector + "p:nth-of-type(6) span.float-right a")))
 
     # rendimiento
     player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(7) span.float-right").text)
@@ -70,6 +67,23 @@ def scrap_player_first_card(driver, player_data_array):
 
     # sueldo
     player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(13) span.float-right").text)
+
+def adapter_posiciones_db_deficiente_j(webelement_posiciones):
+    # paso los web element a array
+    pList = []
+    for wep in webelement_posiciones:
+        pList.append(wep.text)
+
+    # formateo los elementos acorde a la bd de j
+    posiciones = []
+    i = 0
+    celda = "a:" + str(len(pList)) + ": {"
+    for p in pList:
+        celda += "i:" + str(i) + ";s:" + str(len(p)) + "\"" + p + "\";"
+        i+=1
+    celda += "}"
+
+    return celda
 
 def get_csv_header():
     return [
