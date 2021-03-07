@@ -1,7 +1,6 @@
 from string import digits
 import urllib.request
 import re
-# from main2 import DATA_VERSION_DATE
 
 # algunos metodos
 def get_all_url_teams_from_page(driver):

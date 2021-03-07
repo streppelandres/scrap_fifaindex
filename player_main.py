@@ -2,7 +2,7 @@ from selenium import webdriver
 import logging
 from datetime import datetime
 import urllib.request
-import player_functions as functions
+from src import player_functions as functions
 import csv
 
 DATA_VERSION_URL = "fifa17_123" # url version de la data

@@ -1,5 +1,6 @@
 /chromedriver_win32
 /__pycache__
+/*/__pycache__
 *.log
 *.csv
 *.png
