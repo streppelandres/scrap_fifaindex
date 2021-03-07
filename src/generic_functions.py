@@ -1,4 +1,11 @@
 from selenium import webdriver
+import os
+
+def create_directories(path):
+    os.makedirs(path + "/logs", exist_ok=True)
+    os.makedirs(path + "/data", exist_ok=True)
+    os.makedirs(path + "/img/team", exist_ok=True)
+    os.makedirs(path + "/img/player", exist_ok=True)
 
 def get_next_button_url(driver):
     return driver.find_element_by_css_selector("nav ul.pagination li.ml-auto a.btn.btn-light").get_attribute('href')

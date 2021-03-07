@@ -5,6 +5,10 @@ import urllib.request
 from src import generic_functions as g_functions
 from src import player_functions as functions
 import csv
+import os
+
+# creo las carpetas necesarias donde se van almacenar los archivos
+g_functions.create_directories(os.getcwd())
 
 DATA_VERSION_URL = "fifa17_123" # url version de la data
 DATA_VERSION_DATE = "27-03-2017" # fecha de la data (hardcodeado a pedido de J)
