@@ -42,6 +42,7 @@ while True:
             writer = csv.writer(file, quotechar='&') # el quotechar tiene que ser algo que no se use para nada
 
             if(flagFirstTime):
+                # si es la primera vez agrego el header de las columnas
                 writer.writerow(functions.get_csv_header())
                 flagFirstTime = False
 
@@ -58,6 +59,7 @@ while True:
                     )
 
     if((LIMITE_CANTIDAD_PAGINAS-1) == i):
+        # si supera el limite de paginas corto
         logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")
         break
     
