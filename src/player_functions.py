@@ -3,24 +3,9 @@ import urllib.request
 import re
 
 # algunos metodos
-def get_all_url_teams_from_page(driver):
-    teams = driver.find_elements_by_css_selector("table.table-teams tbody tr td[data-title='Nombre'] a.link-team")
-    return [one_team.get_attribute('href') for one_team in teams]
-
-def get_next_button_url(driver):
-    return driver.find_element_by_css_selector("nav ul.pagination li.ml-auto a.btn.btn-light").get_attribute('href')
-
 def get_all_url_players_from_page(driver):
     players = driver.find_elements_by_css_selector("table.table-players")[0].find_elements_by_css_selector("tbody td[data-title='Nombre'] a.link-player")
     return [one_player.get_attribute('href') for one_player in players]
-
-def get_team_name_from_team_page(driver):
-    return driver.find_element_by_css_selector('div.col-lg-8 nav ol.breadcrumb.bg-primary li.breadcrumb-item.active').text
-
-# TODO: Estos dos metodos hacen lo mismo, fijate capaz de hacer uno solo
-def get_team_id_from_url(team_url):
-    url_split = team_url.split('/')
-    return url_split[len(url_split)-4]
 
 def get_player_id_from_url(player_url):
     url_split = player_url.split('/')
