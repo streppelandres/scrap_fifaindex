@@ -2,17 +2,18 @@ from selenium import webdriver
 import logging
 from datetime import datetime
 import urllib.request
-import my_functions as functions
+import player_functions as functions
 import csv
 
 DATA_VERSION_URL = "fifa17_123" # url version de la data
 DATA_VERSION_DATE = "27-03-2017" # fecha de la data (hardcodeado a pedido de J)
 LIMITE_CANTIDAD_PAGINAS = 0 # indicar la cantidad de paginas a scrapear, si es [0] va ser "infinito"
+DATE_TODAY = datetime.today().strftime('%Y%m%d')
 
 flagFirstTime = True # flag para saber si es la primer iteraccion
 
 # log config TODO: Meterlos en una carpeta
-logging.basicConfig(filename= "logs/" + datetime.today().strftime('%Y%m%d') + '_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
+logging.basicConfig(filename= "logs/" + DATE_TODAY + '_player_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
 
 # driver config TODO: Hacer el path relativo
 driver = webdriver.Chrome(executable_path=r"C:\chromedriver_win32\chromedriver.exe")
@@ -35,8 +36,8 @@ while True:
         team_name = functions.get_team_name_from_team_page(driver)
         team_id = functions.get_team_id_from_url(team_url)
 
-        # abro el csv TODO: Meterlo en una carpeta
-        with open('data/player_list.csv', 'a', newline='', encoding="utf-8") as file:
+        # abro el csv
+        with open('data/' + DATE_TODAY + '_player_list.csv', 'a', newline='', encoding="utf-8") as file:
             writer = csv.writer(file, quotechar='&') # el quotechar tiene que ser algo que no se use para nada
 
             if(flagFirstTime):

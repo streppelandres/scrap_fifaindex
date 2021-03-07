@@ -30,7 +30,7 @@ def get_player_id_from_url(player_url):
 def get_and_download_player_img(driver):
     img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6 div.d-flex.mb-3.align-items-center div.align-self-center img.player").get_attribute("src")
     img_src = img_src[0:len(img_src)-4] + "png" # Cambio el formato a png
-    urllib.request.urlretrieve(img_src, "img/" + img_src.split("/")[8])
+    urllib.request.urlretrieve(img_src, "img/player/" + img_src.split("/")[8])
 
 def scrap_player_first_card(driver, player_data_array):
     first_card_selector = "div.col-lg-8 div.row.pt-3 div.col-sm-6 div.card.mb-5 div.card-body "
@@ -125,4 +125,4 @@ def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
 
     return player_data_array
 
-FAKE_ID_PLUS = "1000" # id que se le agrega adelante para adaptarlo al wordpress deficiente de J
+FAKE_ID_PLUS = "5000" # id que se le agrega adelante para adaptarlo al wordpress deficiente de J
