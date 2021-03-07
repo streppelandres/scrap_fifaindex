@@ -16,41 +16,41 @@ def get_and_download_player_img(driver):
     img_src = img_src[0:len(img_src)-4] + "png" # Cambio el formato a png
     urllib.request.urlretrieve(img_src, "img/player/" + img_src.split("/")[8])
 
-def scrap_player_first_card(driver, player_data_array):
+def scrap_player_first_card(driver, p_row):
     first_card_selector = "div.col-lg-8 div.row.pt-3 div.col-sm-6 div.card.mb-5 div.card-body "
 
     # altura
-    player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(1) span.float-right span.data-units.data-units-metric").text)
+    p_row.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(1) span.float-right span.data-units.data-units-metric").text)
 
     # peso
-    player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(2) span.float-right span.data-units.data-units-metric").text)
+    p_row.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(2) span.float-right span.data-units.data-units-metric").text)
 
     # pie
-    player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(3) span.float-right").text)
+    p_row.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(3) span.float-right").text)
 
     # nacimiento
-    player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(4) span.float-right").text)
+    p_row.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(4) span.float-right").text)
 
     # edad
-    player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(5) span.float-right").text)
+    p_row.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(5) span.float-right").text)
 
     # posiciones preferidas
-    player_data_array.append(adapter_posiciones_db_deficiente_j(driver.find_elements_by_css_selector(first_card_selector + "p:nth-of-type(6) span.float-right a")))
+    p_row.append(adapter_posiciones_db_deficiente_j(driver.find_elements_by_css_selector(first_card_selector + "p:nth-of-type(6) span.float-right a")))
 
     # rendimiento
-    player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(7) span.float-right").text)
+    p_row.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(7) span.float-right").text)
 
     # pie_malo
-    player_data_array.append(str(len(driver.find_elements_by_css_selector(first_card_selector + "p:nth-of-type(8) span.float-right span.star i.fas"))))
+    p_row.append(str(len(driver.find_elements_by_css_selector(first_card_selector + "p:nth-of-type(8) span.float-right span.star i.fas"))))
 
     # filigranas
-    player_data_array.append(str(len(driver.find_elements_by_css_selector(first_card_selector + "p:nth-of-type(9) span.float-right span.star i.fas"))))
+    p_row.append(str(len(driver.find_elements_by_css_selector(first_card_selector + "p:nth-of-type(9) span.float-right span.star i.fas"))))
 
     # valor
-    player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(10) span.float-right").text)
+    p_row.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(10) span.float-right").text)
 
     # sueldo
-    player_data_array.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(13) span.float-right").text)
+    p_row.append(driver.find_element_by_css_selector(first_card_selector + "p:nth-of-type(13) span.float-right").text)
 
 def adapter_posiciones_db_deficiente_j(webelement_posiciones):
     # paso los web element a array
@@ -72,41 +72,42 @@ def adapter_posiciones_db_deficiente_j(webelement_posiciones):
 def get_csv_header():
     return [
             "date_version", "equipo_nombre", "equipo_id", "jugador_nombre", "jugador_id", "val_1", "val_2",
-            "altura", "peso", "pie", "nacimiento", "edad", "posiciones", "rendimiento", "pie_malo", "filigranas", "valor", "sueldo" # first box
+            "altura", "peso", "pie", "nacimiento", "edad", "posiciones", "rendimiento",
+            "pie_malo", "filigranas", "valor", "sueldo" # first box
             ]
 
 def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
-    player_data_array = []
+    p_row = []
 
     # descargo la img
     get_and_download_player_img(driver)
 
     # agrego la fecha de la version de los datos
-    player_data_array.append(fecha_de_la_data)
+    p_row.append(fecha_de_la_data)
 
     # equipo_nombre
-    player_data_array.append(team_name)
+    p_row.append(team_name)
 
     # equipo_id
-    player_data_array.append(FAKE_ID_PLUS + team_id)
+    p_row.append(FAKE_ID_PLUS + team_id)
 
     # jugador_nombre
     elementHeader = driver.find_elements_by_css_selector("h5.card-header")[0]
-    player_data_array.append(
+    p_row.append(
         elementHeader.text.translate(str.maketrans('', '', digits)).replace('\n', ' ').replace('\r', '').strip() # agarro nada mas las letras del string
     )
 
     # jugador_id
-    player_data_array.append(player_id)
+    p_row.append(player_id)
 
     # valoraciones
     valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)] # agarro nada mas los enteros del string
-    player_data_array.append(str(valoraciones[0])) # val_1
-    player_data_array.append(str(valoraciones[1])) # val_2
+    p_row.append(str(valoraciones[0])) # val_1
+    p_row.append(str(valoraciones[1])) # val_2
 
     # scrapeo la primer caja, donde esta la altura, peso, pie, posiciones, etc
-    scrap_player_first_card(driver, player_data_array)
+    scrap_player_first_card(driver, p_row)
 
-    return player_data_array
+    return p_row
 
 FAKE_ID_PLUS = "5000" # id que se le agrega adelante para adaptarlo al wordpress deficiente de J
