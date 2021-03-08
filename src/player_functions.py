@@ -11,10 +11,10 @@ def get_player_id_from_url(player_url):
     url_split = player_url.split('/')
     return url_split[len(url_split)-4]
 
-def get_and_download_player_img(driver):
+def get_and_download_player_img(driver, player_id):
     img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6 div.d-flex.mb-3.align-items-center div.align-self-center img.player").get_attribute("src")
-    img_src = img_src[0:len(img_src)-4] + "png" # Cambio el formato a png
-    urllib.request.urlretrieve(img_src, "img/player/" + img_src.split("/")[8])
+    img_src = img_src.replace(".webp", ".png")
+    urllib.request.urlretrieve(img_src, "img/player/" + player_id + ".png")
 
 def scrap_player_first_card(driver, p_row):
     first_card_selector = "div.col-lg-8 div.row.pt-3 div.col-sm-6 div.card.mb-5 div.card-body "
@@ -79,8 +79,10 @@ def get_csv_header():
 def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
     p_row = []
 
+    fake_player_id_result = str(FAKE_PLAYER_ID_PLUS + int(player_id))
+
     # descargo la img
-    get_and_download_player_img(driver)
+    get_and_download_player_img(driver, fake_player_id_result)
 
     # agrego la fecha de la version de los datos
     p_row.append(fecha_de_la_data)
@@ -89,7 +91,7 @@ def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
     p_row.append(team_name)
 
     # equipo_id
-    p_row.append(FAKE_ID_PLUS + team_id)
+    p_row.append(str(FAKE_TEAM_ID_PLUS + int(team_id)))
 
     # jugador_nombre
     elementHeader = driver.find_elements_by_css_selector("h5.card-header")[0]
@@ -98,7 +100,7 @@ def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
     )
 
     # jugador_id
-    p_row.append(player_id)
+    p_row.append(fake_player_id_result)
 
     # valoraciones
     valoraciones = [int(s) for s in re.findall(r'\b\d+\b', elementHeader.text)] # agarro nada mas los enteros del string
@@ -110,4 +112,5 @@ def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
 
     return p_row
 
-FAKE_ID_PLUS = "5000" # id que se le agrega adelante para adaptarlo al wordpress deficiente de J
+FAKE_PLAYER_ID_PLUS = 100000000 # id que se le agrega adelante para adaptarlo al wordpress deficiente de J
+FAKE_TEAM_ID_PLUS = 50000000 # TODO: esto se repite en team_functions.py
