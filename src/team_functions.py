@@ -7,7 +7,7 @@ def get_and_download_team_img(driver, team_id):
     path = os.getcwd() + "/img/team/" + team_id
     os.makedirs(path, exist_ok=True)
 
-    urllib.request.urlretrieve(img_src, path + "/" + team_id + ".png")
+    urllib.request.urlretrieve(img_src.replace(".webp", ".png"), path + "/" + team_id + ".png")
 
 def get_and_download_team_kits(driver, team_id):
     kit_web_element_list = driver.find_elements_by_css_selector("div.col-12.col-lg-7 div.card.mb-5 div.card-body div.row div.col-6.text-center")
@@ -62,5 +62,5 @@ def do_scrap_team(driver, team_name, team_id, data_version_date):
     return t_row
 
 # id's que se le agrega adelante para adaptarlo al wordpress deficiente de J
-FAKE_TEAM_ID_PLUS = 50000000 
+FAKE_TEAM_ID_PLUS = 50000000 # TODO: esto se repite en player_functions.py
 FAKE_LEAGUE_ID_PLUS = 70000000
