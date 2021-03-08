@@ -40,12 +40,14 @@ def get_csv_header():
 def do_scrap_team(driver, team_name, team_id, data_version_date):
     t_row = []
 
-    get_and_download_team_img(driver, team_id) # escudo
-    get_and_download_team_kits(driver, team_id) # camisetas
+    fake_team_id_result = str(FAKE_TEAM_ID_PLUS + int(team_id))
+
+    get_and_download_team_img(driver, fake_team_id_result) # escudo
+    get_and_download_team_kits(driver, fake_team_id_result) # camisetas
 
     t_row.append(data_version_date) # date_version
     t_row.append(team_name) # nombre
-    t_row.append(str(FAKE_TEAM_ID_PLUS + int(team_id))) # id falsa
+    t_row.append(fake_team_id_result) # id falsa
     t_row.append(team_id) # id original
 
     # liga_nombre
