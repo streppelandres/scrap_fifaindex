@@ -61,5 +61,7 @@ while True:
         # si supera el limite de paginas corto
         logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")
         break
+    
+    driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
 
     i+=1
