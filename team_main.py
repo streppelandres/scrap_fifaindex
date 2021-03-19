@@ -10,28 +10,39 @@ import os
 # creo las carpetas necesarias donde se van almacenar los archivos
 g_functions.create_directories(os.getcwd())
 
+START_PAGE = "?page=22" # dejar vacio para que arranque del principio
 DATA_VERSION_URL = "fifa17_123"
 DATA_VERSION_DATE = "27-03-2017"
 LIMITE_CANTIDAD_PAGINAS = 0 # indicar la cantidad de paginas a scrapear, si es [0] va ser "infinito"
 DATE_TODAY = datetime.today().strftime('%Y%m%d')
 
 flagFirstTime = True # flag para saber si es la primer iteraccion
+flagLastPage = False # Flag para saber que no es la ultima pagina a iterar
 
 # log config
 logging.basicConfig(filename= "logs/" + DATE_TODAY + '_team_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
 
 # driver config TODO: Hacer el path relativo
 driver = webdriver.Chrome(executable_path=r"C:\chromedriver_win32\chromedriver.exe")
-driver.get("https://www.fifaindex.com/es/teams/" + DATA_VERSION_URL) # Navigate to the frist team's page
+driver.get("https://www.fifaindex.com/es/teams/" + DATA_VERSION_URL + "/" + START_PAGE) # Navigate to the frist team's page
 
 # config de urlib
 opener=urllib.request.build_opener()
 opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
 urllib.request.install_opener(opener)
 
+# TODO:
+# Hacer algo que busque si ya existe el header-row
+
 i = 0
 while True:
-    next_page_url = g_functions.get_next_button_url(driver)
+    # TODO: Si no encuentra el botonn next significa que es la ultima pag, fijate que rompe
+    
+    try:
+        next_page_url = g_functions.get_next_button_url(driver)
+    except:
+        flagLastPage = True
+        logging.info("Se llego a la ultima pagina")
 
     # por cada equipo de esa pagina
     for team_url in g_functions.get_all_url_teams_from_page(driver):
@@ -60,8 +71,14 @@ while True:
     if((LIMITE_CANTIDAD_PAGINAS-1) == i):
         # si supera el limite de paginas corto
         logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")
+        driver.quit()
         break
     
-    driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
+    # TODO: Si no encuentra el botonn next significa que es la ultima pag, fijate que rompe
+    if not (flagLastPage):
+        driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
+    else:
+        driver.quit()
+        break
 
     i+=1
