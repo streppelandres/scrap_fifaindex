@@ -16,6 +16,7 @@ LIMITE_CANTIDAD_PAGINAS = 0 # indicar la cantidad de paginas a scrapear, si es [
 DATE_TODAY = datetime.today().strftime('%Y%m%d')
 
 flagFirstTime = True # flag para saber si es la primer iteraccion
+flagLastPage = False # Flag para saber que no es la ultima pagina a iterar
 
 # log config
 logging.basicConfig(filename= "logs/" + DATE_TODAY + '_player_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
@@ -29,9 +30,16 @@ opener=urllib.request.build_opener()
 opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
 urllib.request.install_opener(opener)
 
+next_page_url = ""
+
 i = 0
 while True:
-    next_page_url = g_functions.get_next_button_url(driver)
+    try:
+        next_page_url = g_functions.get_next_button_url(driver)
+        logging.info("La proxima pagina a redireccionar va ser [" + next_page_url + "]")
+    except:
+        flagLastPage = True
+        logging.info("Se llego a la ultima pagina")
 
     # por cada equipo de esa pagina
     for team_url in g_functions.get_all_url_teams_from_page(driver):
@@ -67,7 +75,12 @@ while True:
         logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")
         break
     
-    logging.info("Redireccionando a la pagina [" + next_page_url + "]")
-    driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
+    if not (flagLastPage):
+        logging.info("Redireccionando a la pagina [" + next_page_url + "]")
+        driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
+    else:
+        logging.info("Se termino de scrapear los equipos, se va cerrar el driver")
+        driver.quit()
+        break
 
     i+=1
