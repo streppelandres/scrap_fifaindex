@@ -2,12 +2,11 @@ import urllib.request
 import os
 
 def get_and_download_team_img(driver, team_id):
-    img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6.col-md-7 div.d-flex.mb-3.align-items-center div.align-self-center img.team.size-10").get_attribute("src")
-    
+    img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6.col-md-7 div.d-flex.mb-3.align-items-center div.align-self-center img.team.size-10").get_attribute("data-src")
     path = os.getcwd() + "/img/team/" + team_id
     os.makedirs(path, exist_ok=True)
-
-    urllib.request.urlretrieve(img_src.replace(".webp", ".png"), path + "/" + team_id + ".png")
+    path2 = path + "/" + team_id + ".png"
+    urllib.request.urlretrieve("https://www.fifaindex.com/" + img_src, path2.replace('/', '\\'))
 
 def get_and_download_team_kits(driver, team_id):
     kit_web_element_list = driver.find_elements_by_css_selector("div.col-12.col-lg-7 div.card.mb-5 div.card-body div.row div.col-6.text-center")
@@ -16,7 +15,6 @@ def get_and_download_team_kits(driver, team_id):
     for we_kit in kit_web_element_list:
         we_img_src = we_kit.find_element_by_css_selector("img.kit.img-fluid").get_attribute("src")
         we_p = we_kit.find_element_by_css_selector("p").text.lower()
-
         urllib.request.urlretrieve(we_img_src, "img/team/" + team_id + "/" + team_id + "_" + we_p + ".png")
 
 def get_liga_id(driver):
@@ -41,7 +39,6 @@ def do_scrap_team(driver, team_name, team_id, data_version_date):
     t_row = []
 
     fake_team_id_result = str(FAKE_TEAM_ID_PLUS + int(team_id))
-
     get_and_download_team_img(driver, fake_team_id_result) # escudo
     get_and_download_team_kits(driver, fake_team_id_result) # camisetas
 

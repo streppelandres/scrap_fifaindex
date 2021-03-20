@@ -10,7 +10,6 @@ import os
 # creo las carpetas necesarias donde se van almacenar los archivos
 g_functions.create_directories(os.getcwd())
 
-START_PAGE = "?page=22" # dejar vacio para que arranque del principio
 DATA_VERSION_URL = "fifa17_123"
 DATA_VERSION_DATE = "27-03-2017"
 LIMITE_CANTIDAD_PAGINAS = 0 # indicar la cantidad de paginas a scrapear, si es [0] va ser "infinito"
@@ -24,7 +23,7 @@ logging.basicConfig(filename= "logs/" + DATE_TODAY + '_team_logging.log', encodi
 
 # driver config TODO: Hacer el path relativo
 driver = webdriver.Chrome(executable_path=r"C:\chromedriver_win32\chromedriver.exe")
-driver.get("https://www.fifaindex.com/es/teams/" + DATA_VERSION_URL + "/" + START_PAGE) # Navigate to the frist team's page
+driver.get("https://www.fifaindex.com/es/teams/" + DATA_VERSION_URL) # Navigate to the frist team's page
 
 # config de urlib
 opener=urllib.request.build_opener()
@@ -32,14 +31,16 @@ opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKi
 urllib.request.install_opener(opener)
 
 # TODO:
-# Hacer algo que busque si ya existe el header-row
+# Hacer algo que busque si ya existe el header-row, porque cuando retomas va agregar de nuevo el header row
+
+next_page_url = ""
 
 i = 0
 while True:
-    # TODO: Si no encuentra el botonn next significa que es la ultima pag, fijate que rompe
-    
+
     try:
         next_page_url = g_functions.get_next_button_url(driver)
+        logging.info("La proxima pagina a redireccionar va ser [" + next_page_url + "]")
     except:
         flagLastPage = True
         logging.info("Se llego a la ultima pagina")
@@ -58,10 +59,12 @@ while True:
 
             if(flagFirstTime):
                 # si es la primera vez agrego el header de las columnas
+                logging.info("Primer ingreso, se va agregar el header al csv")
                 writer.writerow(functions.get_csv_header())
                 flagFirstTime = False
 
             # scrap team
+            logging.info("Se va scrapear el equipo [" + team_name + "] con la id [" + team_id + "] para la version [" + DATA_VERSION_DATE + "]")
             writer.writerow(
                 functions.do_scrap_team(
                         driver, team_name, team_id, DATA_VERSION_DATE
@@ -74,10 +77,11 @@ while True:
         driver.quit()
         break
     
-    # TODO: Si no encuentra el botonn next significa que es la ultima pag, fijate que rompe
     if not (flagLastPage):
+        logging.info("Redireccionando a la pagina [" + next_page_url + "]")
         driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
     else:
+        logging.info("Se termino de scrapear los equipos, se va cerrar el driver")
         driver.quit()
         break
 
