@@ -12,11 +12,9 @@ g_functions.create_directories(os.getcwd())
 
 DATA_VERSION_URL = "fifa17_123"
 DATA_VERSION_DATE = "27-03-2017"
-LIMITE_CANTIDAD_PAGINAS = 0 # indicar la cantidad de paginas a scrapear, si es [0] va ser "infinito"
 DATE_TODAY = datetime.today().strftime('%Y%m%d')
 
 flagFirstTime = True # flag para saber si es la primer iteraccion
-flagLastPage = False # Flag para saber que no es la ultima pagina a iterar
 
 # log config
 logging.basicConfig(filename= "logs/" + DATE_TODAY + '_team_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
@@ -33,17 +31,10 @@ urllib.request.install_opener(opener)
 # TODO:
 # Hacer algo que busque si ya existe el header-row, porque cuando retomas va agregar de nuevo el header row
 
-next_page_url = ""
-
-i = 0
-while True:
-
-    try:
-        next_page_url = g_functions.get_next_button_url(driver)
-        logging.info("La proxima pagina a redireccionar va ser [" + next_page_url + "]")
-    except:
-        flagLastPage = True
-        logging.info("Se llego a la ultima pagina")
+for i in range(1, g_functions.get_cant_pages(driver) + 1):
+    next_page = "https://www.fifaindex.com/es/teams/"+ DATA_VERSION_URL +"/?page=" + str(i)
+    logging.info("Redireccionando a la pagina [" + next_page + "]")
+    driver.get(next_page) # Al finalizar esta pagina de equipos, voy a la siguiente
 
     # por cada equipo de esa pagina
     for team_url in g_functions.get_all_url_teams_from_page(driver):
@@ -58,31 +49,14 @@ while True:
             writer = csv.writer(file, quotechar='&') # el quotechar tiene que ser algo que no se use para nada
 
             if(flagFirstTime):
-                # si es la primera vez agrego el header de las columnas
                 logging.info("Primer ingreso, se va agregar el header al csv")
                 writer.writerow(functions.get_csv_header())
                 flagFirstTime = False
 
             # scrap team
-            logging.info("Se va scrapear el equipo [" + team_name + "] con la id [" + team_id + "] para la version [" + DATA_VERSION_DATE + "]")
-            writer.writerow(
-                functions.do_scrap_team(
-                        driver, team_name, team_id, DATA_VERSION_DATE
-                    )
-                )
+            logging.info("Se va scrapear el equipo [" + team_name + "] con la id [" + team_id + "]")
+            writer.writerow(functions.do_scrap_team(driver, team_name, team_id, DATA_VERSION_DATE))
 
-    if((LIMITE_CANTIDAD_PAGINAS-1) == i):
-        # si supera el limite de paginas corto
-        logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")
-        driver.quit()
-        break
-    
-    if not (flagLastPage):
-        logging.info("Redireccionando a la pagina [" + next_page_url + "]")
-        driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
-    else:
-        logging.info("Se termino de scrapear los equipos, se va cerrar el driver")
-        driver.quit()
-        break
-
-    i+=1
+else:
+    logging.info("Se termino de scrapear los equipos, se va cerrar el driver")
+    driver.quit()

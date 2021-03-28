@@ -7,6 +7,11 @@ def create_directories(path):
     os.makedirs(path + "/img/team", exist_ok=True)
     os.makedirs(path + "/img/player", exist_ok=True)
 
+def get_cant_pages(driver):
+    href = driver.find_element_by_css_selector("div#bigpagination nav:first-child ul.pagination.justify-content-center li.page-item:last-child a.page-link").get_attribute("href").split("/")[-1]
+    return int(''.join(x for x in href if x.isdigit()))
+
+# deprecated
 def get_next_button_url(driver):
     return driver.find_element_by_css_selector("nav ul.pagination li.ml-auto a.btn.btn-light").get_attribute('href')
 
