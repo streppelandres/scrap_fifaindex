@@ -1,6 +1,7 @@
 from string import digits
 import urllib.request
 import re
+import os
 
 # algunos metodos
 def get_all_url_players_from_page(driver):
@@ -11,10 +12,12 @@ def get_player_id_from_url(player_url):
     url_split = player_url.split('/')
     return url_split[len(url_split)-4]
 
-def get_and_download_player_img(driver, player_id):
-    img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6 div.d-flex.mb-3.align-items-center div.align-self-center img.player").get_attribute("src")
-    img_src = img_src.replace(".webp", ".png")
-    urllib.request.urlretrieve(img_src, "img/player/" + player_id + ".png")
+def get_and_download_player_img(driver, player_id, team_id):
+    img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6 div.d-flex.mb-3.align-items-center div.align-self-center img.player").get_attribute("data-src")
+    path = os.getcwd() + "/img/player/" + team_id
+    os.makedirs(path, exist_ok=True)
+    path2 = path + "/" + player_id + ".png"
+    urllib.request.urlretrieve("https://www.fifaindex.com/" + img_src, path2.replace('/', '\\'))
 
 def scrap_player_first_card(driver, p_row):
     first_card_selector = "div.col-lg-8 div.row.pt-3 div.col-sm-6 div.card.mb-5 div.card-body "
@@ -79,10 +82,11 @@ def get_csv_header():
 def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
     p_row = []
 
+    fake_team_id_result = str(FAKE_TEAM_ID_PLUS + int(team_id))
     fake_player_id_result = str(FAKE_PLAYER_ID_PLUS + int(player_id))
 
     # descargo la img
-    get_and_download_player_img(driver, fake_player_id_result)
+    get_and_download_player_img(driver, fake_player_id_result, fake_team_id_result)
 
     # agrego la fecha de la version de los datos
     p_row.append(fecha_de_la_data)
@@ -91,7 +95,7 @@ def do_scrap_player(driver, team_name, team_id, player_id, fecha_de_la_data):
     p_row.append(team_name)
 
     # equipo_id
-    p_row.append(str(FAKE_TEAM_ID_PLUS + int(team_id)))
+    p_row.append(fake_team_id_result)
 
     # jugador_nombre
     elementHeader = driver.find_elements_by_css_selector("h5.card-header")[0]

@@ -48,10 +48,9 @@ for i in range(1, g_functions.get_cant_pages(driver) + 1):
         with open('data/' + DATE_TODAY + '_team_list.csv', 'a', newline='', encoding="utf-8") as file:
             writer = csv.writer(file, quotechar='&') # el quotechar tiene que ser algo que no se use para nada
 
-            if(flagFirstTime):
+            if(i == 1):
                 logging.info("Primer ingreso, se va agregar el header al csv")
                 writer.writerow(functions.get_csv_header())
-                flagFirstTime = False
 
             # scrap team
             logging.info("Se va scrapear el equipo [" + team_name + "] con la id [" + team_id + "]")

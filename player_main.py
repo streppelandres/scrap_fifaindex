@@ -12,11 +12,7 @@ g_functions.create_directories(os.getcwd())
 
 DATA_VERSION_URL = "fifa17_123" # url version de la data
 DATA_VERSION_DATE = "27-03-2017" # fecha de la data (hardcodeado a pedido de J)
-LIMITE_CANTIDAD_PAGINAS = 0 # indicar la cantidad de paginas a scrapear, si es [0] va ser "infinito"
 DATE_TODAY = datetime.today().strftime('%Y%m%d')
-
-flagFirstTime = True # flag para saber si es la primer iteraccion
-flagLastPage = False # Flag para saber que no es la ultima pagina a iterar
 
 # log config
 logging.basicConfig(filename= "logs/" + DATE_TODAY + '_player_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
@@ -30,16 +26,20 @@ opener=urllib.request.build_opener()
 opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
 urllib.request.install_opener(opener)
 
-next_page_url = ""
-
-i = 0
-while True:
-    try:
-        next_page_url = g_functions.get_next_button_url(driver)
-        logging.info("La proxima pagina a redireccionar va ser [" + next_page_url + "]")
-    except:
-        flagLastPage = True
-        logging.info("Se llego a la ultima pagina")
+for i in range(1, g_functions.get_cant_pages(driver) + 1):
+    next_page = "https://www.fifaindex.com/es/teams/"+ DATA_VERSION_URL +"/?page=" + str(i)
+    logging.info("Redireccionando a la pagina [" + next_page + "]")
+    driver.get(next_page) # Al finalizar esta pagina de equipos, voy a la siguiente
+    while True: # TODO: Extraer esto en una funcion
+        try:
+            # Si encuentra el elemento significa que hay error, sigo dentro del while
+            error_type = driver.find_elements_by_css_selector('div#cf-wrapper div#cf-error-details header h1 span.cf-error-type').text
+            error_code = driver.find_elements_by_css_selector('div#cf-wrapper div#cf-error-details header h1 span.cf-error-code').text
+            logging.error(error_type + " " + error_code + ", se va volver a intentar ingresar a [" + next_page + "]")
+            driver.get(next_page)
+        except:
+            # Si no encuentra el elemento significa que todo esta bien, salgo del while
+            break
 
     # por cada equipo de esa pagina
     for team_url in g_functions.get_all_url_teams_from_page(driver):
@@ -53,15 +53,25 @@ while True:
         with open('data/' + DATE_TODAY + '_player_list.csv', 'a', newline='', encoding="utf-8") as file:
             writer = csv.writer(file, quotechar='&') # el quotechar tiene que ser algo que no se use para nada
 
-            if(flagFirstTime):
+            if(i == 1):
                 # si es la primera vez agrego el header de las columnas
                 writer.writerow(functions.get_csv_header())
-                flagFirstTime = False
 
             # por cada jugador de ese equipo
             for player_url in functions.get_all_url_players_from_page(driver):
                 logging.info("Redireccionando al jugador [" + player_url + "]")
                 driver.get(player_url) # navigate to player page
+
+                while True: # TODO: Extraer esto en una funcion
+                    try:
+                        # Si encuentra el elemento significa que hay error, sigo dentro del while
+                        error_type = driver.find_elements_by_css_selector('div#cf-wrapper div#cf-error-details header h1 span.cf-error-type').text
+                        error_code = driver.find_elements_by_css_selector('div#cf-wrapper div#cf-error-details header h1 span.cf-error-code').text
+                        logging.error(error_type + " " + error_code + ", se va volver a intentar ingresar a [" + player_url + "]")
+                        driver.get(player_url)
+                    except:
+                        # Si no encuentra el elemento significa que todo esta bien, salgo del while
+                        break
 
                 # scrapeo el player y lo guardo en el csv
                 writer.writerow(
@@ -69,18 +79,7 @@ while True:
                             driver, team_name, team_id, functions.get_player_id_from_url(player_url), DATA_VERSION_DATE
                         )
                     )
-
-    if((LIMITE_CANTIDAD_PAGINAS-1) == i):
-        # si supera el limite de paginas corto
-        logging.info("Cantidad limite de paginas alcanzado [" + LIMITE_CANTIDAD_PAGINAS + "]")
-        break
     
-    if not (flagLastPage):
-        logging.info("Redireccionando a la pagina [" + next_page_url + "]")
-        driver.get(next_page_url) # al finalizar esta pagina de equipos, voy a la siguiente
-    else:
-        logging.info("Se termino de scrapear los equipos, se va cerrar el driver")
-        driver.quit()
-        break
-
-    i+=1
+else:
+    logging.info("Se termino de scrapear los equipos, se va cerrar el driver")
+    driver.quit()
