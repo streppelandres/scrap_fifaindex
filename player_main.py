@@ -13,9 +13,12 @@ g_functions.create_directories(os.getcwd())
 DATA_VERSION_URL = "fifa17_123" # url version de la data
 DATA_VERSION_DATE = "27-03-2017" # fecha de la data (hardcodeado a pedido de J)
 DATE_TODAY = datetime.today().strftime('%Y%m%d')
+
+# Si se queda colgado en algun player, cambias estos datos y ya, si no hay una forma de hacer que no se pijee, fijate que cuand ose pijea complete esto automatico:
+START_PAGE = 16
 hardCodeUrl = True
-hardCodeUrlTeam = "https://www.fifaindex.com/es/team/111706/godoy-cruz/fifa17_123/"
-hardCodeUrlPlayer = "https://www.fifaindex.com/es/player/220059/diego-poyet/fifa17_123/"
+hardCodeUrlTeam = "https://www.fifaindex.com/es/team/1794/sheffield-united/fifa17_123/"
+hardCodeUrlPlayer = "https://www.fifaindex.com/es/player/212300/jack-oconnell/fifa17_123/"
 
 # log config
 logging.basicConfig(filename= "logs/" + DATE_TODAY + '_player_logging.log', encoding='utf-8', format='%(asctime)s %(message)s', level=logging.INFO)
@@ -29,7 +32,7 @@ opener=urllib.request.build_opener()
 opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
 urllib.request.install_opener(opener)
 
-for i in range(11, g_functions.get_cant_pages(driver) + 1):
+for i in range(START_PAGE, g_functions.get_cant_pages(driver) + 1):
     next_page = "https://www.fifaindex.com/es/teams/"+ DATA_VERSION_URL +"/?page=" + str(i)
     logging.info("Redireccionando a la pagina [" + next_page + "]")
     driver.get(next_page) # Al finalizar esta pagina de equipos, voy a la siguiente
