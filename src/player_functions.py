@@ -14,7 +14,7 @@ def get_player_id_from_url(player_url):
 
 def get_and_download_player_img(driver, player_id, team_id):
     img_src = driver.find_element_by_css_selector("div.row.pt-3 div.col-sm-6 div.d-flex.mb-3.align-items-center div.align-self-center img.player").get_attribute("data-src")
-    path = os.getcwd() + "/img/player/" + team_id
+    path = os.getcwd() + "/img/player"
     os.makedirs(path, exist_ok=True)
     path2 = path + "/" + player_id + ".png"
     urllib.request.urlretrieve("https://www.fifaindex.com/" + img_src, path2.replace('/', '\\'))
